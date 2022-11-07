@@ -1,10 +1,35 @@
-.container {
+#board-container {
   margin: auto;
   width: 600px;
 }
 
+#start-place {
+  width: 300px;
+  margin: auto;
+  text-align: center;
+}
+
+#start-place button {
+  font-size: 20px;
+  padding: 5px 15px;
+}
+
+#start-place .left-button {
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+
+.start-buttons-section {
+  border: 1px solid gray;
+  margin: 10px 0;
+}
+
 .hide {
   display: none;
+}
+
+.selected {
+  border: 2px solid palevioletred;
 }
 
 .board {

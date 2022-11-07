@@ -4,13 +4,39 @@
   </head>
 
   <body>
-    <div class="container">
+    <div id="start-place">
+      <h1>chose your name</h1>
+      
+      <div id="human-human-section" class="start-buttons-section selected">
+        <h3>human-human</h3>
+
+        <div>
+          <button id="xButton-human" class="left-button selected">X</button>
+          <button id="oButton-human">O</button>
+        </div>    
+      </div>
+
+      <div id="computer-human-section" class="start-buttons-section">
+        <h3>human-computer</h3>
+
+        <div>
+          <button id="xButton-computer" class="left-button">X</button>
+          <button id="oButton-computer">O</button>
+        </div>
+      </div>
+
+      <button id="startButton">start</button>
+    </div>
+
+    <div id="board-container" class="hide">
       <button id="playAgain" class="hide">Play again</button>
         
       <h1>
         resualt: 
         <span id="resualt"></span>
       </h1>
+
+      <h2 id="turn"></h2>
 
       <div class="board">
         <div class="cell"></div>
