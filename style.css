@@ -1,0 +1,34 @@
+.container {
+  margin: auto;
+  width: 600px;
+}
+
+.hide {
+  display: none;
+}
+
+.board {
+  width: 300px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.board .cell {
+  width: 80px;
+  height: 80px;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: black
+}
+
+.board .cell:hover {
+  background: red;
+}
+
+#resualt {
+  color: red;
+}
