@@ -13,6 +13,10 @@ let board = (() => {
     cells[index] = playerSymbol
   }
 
+  const playedCellsCount = function() {
+    return cells.filter((cell) => cell === 'x' || cell == 'o' ).length
+  }
+
   const cellIsFree = (index) => {
     return cells[index] !== 'x' && cells[index] !== 'o'
   }
@@ -47,7 +51,8 @@ let board = (() => {
     cellIsFree,
     addToBoard,
     checkWinner,
-    resetBoard
+    resetBoard,
+    playedCellsCount
   }
 })()
 
@@ -77,18 +82,23 @@ const playRound = (function() {
         if(board.cellIsFree(index) && !board.checkWinner()) {
           this.innerText = turn
           board.addToBoard(index, turn)
-          showResualt(board.checkWinner())
+
+          if(board.checkWinner()) {
+            resualt.innerHTML = `${turn} is winner`
+            playAgainButton.classList.remove('hide')
+            return
+          }
+
+          if(board.playedCellsCount() === 9) {
+            resualt.innerHTML = 'tie'
+            playAgainButton.classList.remove('hide')
+            return
+          }
+
           toggleTurn()
         }
       })
     })
-  }
-
-  function showResualt(winner) {
-    if(winner) {
-      resualt.innerHTML = `${winner} is winner`
-      playAgainButton.classList.remove('hide')
-    }
   }
 
   return { play }
