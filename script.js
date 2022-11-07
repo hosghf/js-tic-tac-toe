@@ -62,27 +62,27 @@ let board = (() => {
 })()
 
 const playRound = (function() {
-  let turn = 'x'
+  let player = 'x'
   let humanComputer = false
 
   const resualt = document.querySelector('#resualt')
-  const turnText = document.querySelector('#turn')
+  const playerName = document.querySelector('#player-turn')
 
   const playAgainButton = document.querySelector('#playAgain')
   playAgainButton.addEventListener('click', function() {
-    turn = 'x'
+    player = 'x'
     board.resetBoard()
     resualt.innerHTML = ''
-    turnText.innerHTML = `${turn.toLocaleUpperCase()} it's your turn`
+    playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
   })
      
-  const toggleTurn = () => {
-    if(turn === 'x')
-      turn = 'o'
+  const togglePlayer = () => {
+    if(player === 'x')
+      player = 'o'
     else
-      turn = 'x'
+      player = 'x'
 
-    turnText.innerHTML = `${turn.toLocaleUpperCase()} it's your turn`
+    playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
   }
 
   function initilizeRound() {
@@ -98,29 +98,30 @@ const playRound = (function() {
     const boardContainer = document.querySelector('#board-container')
     const computerHumanSection = document.querySelector('#computer-human-section')
     const humanHumanSection = document.querySelector('#human-human-section')
+    const backToStart = document.querySelector('#back-to-start')
 
     xButtonHuman.addEventListener('click', function(){
       this.classList.add('selected')
       oButtonHuman.classList.remove('selected')
-      turn = 'x'
+      player = 'x'
     })
 
     oButtonHuman.addEventListener('click', function() {
       this.classList.add('selected')
       xButtonHuman.classList.remove('selected')
-      turn = 'o'
+      player = 'o'
     })
 
     xButtonComputer.addEventListener('click', function() {
       this.classList.add('selected')
       oButtonComputer.classList.remove('selected')
-      turn = 'x'
+      player = 'x'
     })
 
     oButtonComputer.addEventListener('click', function(){
       this.classList.add('selected')
       xButtonComputer.classList.remove('selected')
-      turn = 'o'
+      player = 'o'
     })
 
     computerHumanSection.addEventListener('click', function () {
@@ -142,23 +143,23 @@ const playRound = (function() {
     startButton.addEventListener('click', function() {
       startContainer.classList.add('hide')
       boardContainer.classList.remove('hide')
-      turnText.innerHTML = `${turn.toLocaleUpperCase()} it's your turn`
+      playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
       play()
     })
   }
 
   function checkWinner() {
     if(board.checkWinner()) {
-      resualt.innerHTML = `${turn} is winner`
+      resualt.innerHTML = `${player} is winner`
       playAgainButton.classList.remove('hide')
-      turnText.innerHTML = ''
+      playerName.innerHTML = ''
       return true
     }
 
     if(board.playedCellsCount() === 9) {
       resualt.innerHTML = 'tie'
       playAgainButton.classList.remove('hide')
-      turnText.innerHTML = ''
+      playerName.innerHTML = ''
       return true
     }
 
@@ -172,11 +173,11 @@ const playRound = (function() {
       cells.forEach((cell, index) => {
         cell.addEventListener('click', function() {
           if(board.cellIsFree(index) && !board.checkWinner()) {
-            this.innerText = turn
-            board.addToBoard(index, turn)
+            this.innerText = player
+            board.addToBoard(index, player)
 
             if(checkWinner()) return
-            toggleTurn()
+            togglePlayer()
           }
         })
       })
@@ -184,21 +185,21 @@ const playRound = (function() {
       cells.forEach((cell, index) => {
         cell.addEventListener('click', function() {
           if(board.cellIsFree(index) && !board.checkWinner()) {
-            this.innerText = turn
-            board.addToBoard(index, turn)
+            this.innerText = player
+            board.addToBoard(index, player)
           } else return
 
           if(checkWinner()) return
-          toggleTurn()
+          togglePlayer()
     
           let computerChose = board.freeCells()[Math.floor(Math.random() * board.freeCells().length)]
           if(board.cellIsFree(computerChose) && !board.checkWinner()) {
-            cells[computerChose].innerText = turn
-            board.addToBoard(computerChose, turn)
+            cells[computerChose].innerText = player
+            board.addToBoard(computerChose, player)
           }
 
           if(checkWinner()) return
-          toggleTurn()
+          togglePlayer()
         })
       })
     }
