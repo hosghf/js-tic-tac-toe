@@ -31,20 +31,10 @@ let board = (() => {
                         [0,4,8],[2,4,6]]
 
     for(let stateArray of winingStates) {
-      let countX = 0
-      let countO = 0
-      for(let index of stateArray) {
-        if(cells[index] === 'x')
-          countX++
-        
-        if(cells[index] === 'o')
-          countO++
-      }
-
-      if(countX === 3)
+      if(stateArray.every((element) => { return cells[element] === 'x' }))
         return 'x'
 
-      if(countO === 3)
+      if(stateArray.every((element) => { return cells[element] === 'o' }))
         return 'o'
     }
 
