@@ -165,6 +165,8 @@ const playRound = (function() {
         })
       })
     } else {
+      let computerChose
+
       displayController.cells.forEach((cell, index) => {
         cell.addEventListener('click', function() {
           if(board.cellIsFree(index) && !board.checkWinner()) {
@@ -177,9 +179,14 @@ const playRound = (function() {
             return
           }
 
+          if(board.playedCellsCount() === 9) {
+            displayController.showResult('tie')
+            return
+          }
+
           togglePlayer()
     
-          let computerChose = board.freeCells()[Math.floor(Math.random() * board.freeCells().length)]
+          computerChose = board.freeCells()[Math.floor(Math.random() * board.freeCells().length)]
           if(board.cellIsFree(computerChose)) {
             displayController.cells[computerChose].innerText = player
             board.addToBoard(computerChose, player)
