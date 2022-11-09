@@ -3,10 +3,6 @@ let board = (() => {
 
   const resetBoard = () => {
     cells = [0,1,2,3,4,5,6,7,8]
-    const cellsUi = document.querySelectorAll('.cell')
-    cellsUi.forEach((cell) => {
-      cell.innerHTML = ''
-    })
   }
 
   const addToBoard = function(index, playerSymbol) {
@@ -51,28 +47,34 @@ let board = (() => {
   }
 })()
 
-const playRound = (function() {
+displayController = (() => {
   let player = 'x'
   let humanComputer = false
-
   const resualt = document.querySelector('#resualt')
-  const playerName = document.querySelector('#player-turn')
+  const playerTurn = document.querySelector('#player-turn')
+  const cells = document.querySelectorAll('.cell')
 
-  const playAgainButton = document.querySelector('#playAgain')
-  playAgainButton.addEventListener('click', function() {
-    player = 'x'
+  getHumanComputer = () => { return humanComputer }
+  getPlayer = () => { return player }
+
+  function resetGame() {
+    const cells = document.querySelectorAll('.cell')
+    cells.forEach((cell) => {
+      cell.innerText = ''
+    })
+
     board.resetBoard()
     resualt.innerHTML = ''
-    playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
-  })
-     
-  const togglePlayer = () => {
-    if(player === 'x')
-      player = 'o'
-    else
-      player = 'x'
+    playerTurn.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
+  }
 
-    playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
+  const playAgainButton = document.querySelector('#playAgain')
+  playAgainButton.addEventListener('click', resetGame)
+
+  function showResult(message) {
+    resualt.innerHTML = message
+    displayController.playAgainButton.classList.remove('hide')
+    displayController.playerTurn.innerHTML = ''
   }
 
   function initilizeRound() {
@@ -88,115 +90,113 @@ const playRound = (function() {
     const boardContainer = document.querySelector('#board-container')
     const computerHumanSection = document.querySelector('#computer-human-section')
     const humanHumanSection = document.querySelector('#human-human-section')
-    const backToStart = document.querySelector('#back-to-start')
 
-    xButtonHuman.addEventListener('click', function(){
+    function togglePlayerNameButton(oponentButton, p) {
       this.classList.add('selected')
-      oButtonHuman.classList.remove('selected')
-      player = 'x'
-    })
+      oponentButton.classList.remove('selected')
+      player = p
+    }
 
-    oButtonHuman.addEventListener('click', function() {
+    function computerHumanToggle(unSelected, computerStatus, buttons) {
+      humanComputer = computerStatus
       this.classList.add('selected')
-      xButtonHuman.classList.remove('selected')
-      player = 'o'
-    })
+      unSelected.classList.remove('selected')
+      buttons[0].classList.remove('selected')
+      buttons[1].classList.remove('selected')
+    }
 
-    xButtonComputer.addEventListener('click', function() {
-      this.classList.add('selected')
-      oButtonComputer.classList.remove('selected')
-      player = 'x'
-    })
+    // the first parameter is the scope of 'x' for the bind function, the second is 
+    // the oponent button
+    xButtonHuman.addEventListener('click', togglePlayerNameButton.bind(xButtonHuman, oButtonHuman, 'x'))
+    oButtonHuman.addEventListener('click', togglePlayerNameButton.bind(oButtonHuman, xButtonHuman, 'o'))
+    xButtonComputer.addEventListener('click', togglePlayerNameButton.bind(xButtonComputer, oButtonComputer, 'x'))
+    oButtonComputer.addEventListener('click', togglePlayerNameButton.bind(oButtonComputer, xButtonComputer, 'o') )
 
-    oButtonComputer.addEventListener('click', function(){
-      this.classList.add('selected')
-      xButtonComputer.classList.remove('selected')
-      player = 'o'
-    })
-
-    computerHumanSection.addEventListener('click', function () {
-      humanComputer = true
-      this.classList.add('selected')
-      humanHumanSection.classList.remove('selected')
-      xButtonHuman.classList.remove('selected')
-      oButtonHuman.classList.remove('selected')
-    })
-
-    humanHumanSection.addEventListener('click', function () {
-      humanComputer = false
-      this.classList.add('selected')
-      computerHumanSection.classList.remove('selected')
-      xButtonComputer.classList.remove('selected')
-      oButtonComputer.classList.remove('selected')
-    })
+    computerHumanSection.addEventListener('click',computerHumanToggle.bind(computerHumanSection, humanHumanSection, true, [xButtonHuman, oButtonHuman]))
+    humanHumanSection.addEventListener('click', computerHumanToggle.bind(humanHumanSection, computerHumanSection, false, [xButtonComputer, oButtonComputer]))
 
     startButton.addEventListener('click', function() {
       startContainer.classList.add('hide')
       boardContainer.classList.remove('hide')
-      playerName.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
-      play()
+      playerTurn.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
+      playRound.play()
     })
   }
 
-  function checkWinner() {
-    if(board.checkWinner()) {
-      resualt.innerHTML = `${player} is winner`
-      playAgainButton.classList.remove('hide')
-      playerName.innerHTML = ''
-      return true
-    }
+  return { initilizeRound, showResult, playAgainButton, playerTurn, getPlayer, getHumanComputer, cells }
+})()
 
-    if(board.playedCellsCount() === 9) {
-      resualt.innerHTML = 'tie'
-      playAgainButton.classList.remove('hide')
-      playerName.innerHTML = ''
-      return true
-    }
+const playRound = (function() {
+  let player = 'x'
+  let humanComputer = false
+     
+  const togglePlayer = () => {
+    if(player === 'x')
+      player = 'o'
+    else
+      player = 'x'
 
-    return false
+    displayController.playerTurn.innerHTML = `${player.toLocaleUpperCase()} it's your turn`
   }
 
   function play() {
-    const cells = document.querySelectorAll('.cell')
+    humanComputer = displayController.getHumanComputer()
+    player = displayController.getPlayer()
 
     if(!humanComputer) {
-      cells.forEach((cell, index) => {
+      displayController.cells.forEach((cell, index) => {
         cell.addEventListener('click', function() {
           if(board.cellIsFree(index) && !board.checkWinner()) {
             this.innerText = player
             board.addToBoard(index, player)
 
-            if(checkWinner()) return
+            if(board.checkWinner()){
+              displayController.showResult(`${player} is winner`)
+              return
+            }
+
+            if(board.playedCellsCount() === 9) {
+              displayController.showResult('tie')
+              return
+            }
+            
             togglePlayer()
           }
         })
       })
     } else {
-      cells.forEach((cell, index) => {
+      displayController.cells.forEach((cell, index) => {
         cell.addEventListener('click', function() {
           if(board.cellIsFree(index) && !board.checkWinner()) {
             this.innerText = player
             board.addToBoard(index, player)
           } else return
 
-          if(checkWinner()) return
-          
+          if(board.checkWinner()){
+            displayController.showResult(`${player} is winner`)
+            return
+          }
+
           togglePlayer()
     
           let computerChose = board.freeCells()[Math.floor(Math.random() * board.freeCells().length)]
           if(board.cellIsFree(computerChose)) {
-            cells[computerChose].innerText = player
+            displayController.cells[computerChose].innerText = player
             board.addToBoard(computerChose, player)
           }
 
-          if(checkWinner()) return
+          if(board.checkWinner()){
+            displayController.showResult(`${player} is winner`)
+            return
+          }
+          
           togglePlayer()
         })
       })
     }
   }
 
-  return { initilizeRound }
+  return { play }
 })()
 
-playRound.initilizeRound()
+displayController.initilizeRound()
