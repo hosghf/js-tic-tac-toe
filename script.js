@@ -180,10 +180,11 @@ const playRound = (function() {
           } else return
 
           if(checkWinner()) return
+          
           togglePlayer()
     
           let computerChose = board.freeCells()[Math.floor(Math.random() * board.freeCells().length)]
-          if(board.cellIsFree(computerChose) && !board.checkWinner()) {
+          if(board.cellIsFree(computerChose)) {
             cells[computerChose].innerText = player
             board.addToBoard(computerChose, player)
           }
